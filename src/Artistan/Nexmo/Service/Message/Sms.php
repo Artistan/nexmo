@@ -187,6 +187,8 @@ class Sms {
             );
             $context = stream_context_create($opts);
             $from_nexmo = file_get_contents($this->nx_uri, false, $context);
+            // TODO: data for test cast.
+            // $from_nexmo = '{"message-count":"1","messages":[{"to":"15079934320","message-id":"030000004090C3EF","status":"0","remaining-balance":"1.97600000","message-price":"0.00480000","network":"310004"}]}';
         } else {
             // No way of sending a HTTP post :(
             return false;
@@ -231,22 +233,23 @@ class Sms {
      */
     private function nexmoParse ( $from_nexmo ) {
         $response = json_decode($from_nexmo);
-
         // Copy the response data into an object, removing any '-' characters from the key
         $response_obj = $this->normaliseKeys($response);
 
         if ($response_obj) {
-            $this->nexmo_response = $response_obj;
+            $this->nexmo_response = (array) $response_obj;
 
             // Find the total cost of this message
-            $response_obj->cost = $total_cost = 0;
-            if (is_array($response_obj->messages)) {
-                foreach ($response_obj->messages as $msg) {
+            $response_obj['cost'] = $total_cost = 0;
+            if (is_array($response_obj['messages'])) {
+                foreach ($response_obj['messages'] as $msg) {
                     if (property_exists($msg, "messageprice")) {
                         $total_cost = $total_cost + (float)$msg->messageprice;
+                    } elseif(array_key_exists('messageprice',$msg)) {
+                        $total_cost = $total_cost + (float)$response_obj['messageprice'];
                     }
                 }
-                $response_obj->cost = $total_cost;
+                $response_obj['cost'] = $total_cost;
             }
             return $response_obj;
 
