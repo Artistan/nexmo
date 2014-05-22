@@ -6,7 +6,7 @@
  * Time: 3:26 PM
  */
 
-use Artistan\Nexmo\Service\Message\Sms;
+use \Mockery as m;
 
 class MessageSmsTest extends Orchestra\Testbench\TestCase {
 
@@ -20,7 +20,7 @@ class MessageSmsTest extends Orchestra\Testbench\TestCase {
     }
     protected function getPackageProviders()
     {
-        return array('Nexmo\NexmoServiceProvider');
+        return array('Artistan\Nexmo\NexmoServiceProvider');
     }
 }
  
