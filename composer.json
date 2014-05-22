@@ -1,6 +1,10 @@
 {
     "name": "artistan/nexmo",
-    "description": "",
+    "description": "Nexmo Sms Client",
+    "keywords": ["artistan", "sms", "laravel", "laravel4","client"],
+    "license": [
+        "GPL-3.0+"
+    ],
     "authors": [
         {
             "name": "Charles Peterson",
