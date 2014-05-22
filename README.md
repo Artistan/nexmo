@@ -32,22 +32,25 @@ Quick Examples
 1) Sending an SMS
 
     $sms = new Artistan\Nexmo\Service\Message\Sms;
+    $sms = \App::make('nexmosmsmessage');
     $result = $sms->sendText('15005554320','15555633637','dude, this is from a laravel package');
 
 2) Recieving SMS
 
-//  TODO:: setup routing for this...
-    $sms = new Artistan\Nexmo\Service\Message\Sms;
+//  TODO:: setup default routing for this...
+     $sms = new Artistan\Nexmo\Service\Message\Sms;
+     $sms = \App::make('nexmosmsmessage');
      if ($sms->inboundText()) {
          $sms->reply('You said: ' . $sms->text);
      }
 
 
 
-3) Recieving a message receipt
+3) Receiving a message receipt
 
-//  TODO:: setup routing for this...
+//  TODO:: setup default routing for this...
      $receipt = new Artistan\Nexmo\Service\Receipt;
+     $receipt = \App::make('nexmoreceipt');
      if ($receipt->exists()) {
          switch ($receipt->status) {
              case $receipt::STATUS_DELIVERED:
@@ -66,6 +69,7 @@ Quick Examples
 4) List purchased numbers on your account
 
      $account = new Artistan\Nexmo\Service\Account;
+     $account = \App::make('nexmoaccount');
      $numbers = $account->numbersList();
 
 
