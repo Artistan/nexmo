@@ -24,18 +24,15 @@ class Sms {
      */
     var $nx_uri = 'https://rest.nexmo.com/sms/json';
 
-
     /**
      * @var array The most recent parsed Nexmo response.
      */
     private $nexmo_response = '';
 
-
     /**
      * @var bool If recieved an inbound message
      */
     var $inbound_message = false;
-
 
     // Current message
     public $to = '';
@@ -46,7 +43,6 @@ class Sms {
 
     // A few options
     public $ssl_verify = false; // Verify Nexmo SSL before sending any message
-
 
     public function __construct ($api_key='', $api_secret='') {
         if(!empty($api_key) && !empty($api_secret)){
@@ -61,8 +57,6 @@ class Sms {
             throw new \Exception("Account Credentials Exception",5001);
         }
     }
-
-
 
     /**
      * Prepare new text message.
@@ -105,15 +99,12 @@ class Sms {
             'type' => $containsUnicode ? 'unicode' : 'text'
         );
         return $this->sendRequest ( $post );
-
     }
-
 
     /**
      * Prepare new WAP message.
      */
     function sendBinary ( $to, $from, $body, $udh ) {
-
         //Binary messages must be hex encoded
         $body = bin2hex ( $body );
         $udh = bin2hex ( $udh );
@@ -130,9 +121,7 @@ class Sms {
             'udh' => $udh
         );
         return $this->sendRequest ( $post );
-
     }
-
 
     /**
      * Prepare new binary message.
@@ -158,9 +147,7 @@ class Sms {
             'validity' => $validity
         );
         return $this->sendRequest ( $post );
-
     }
-
 
     /**
      * Prepare and send a new message.
@@ -200,8 +187,6 @@ class Sms {
             );
             $context = stream_context_create($opts);
             $from_nexmo = file_get_contents($this->nx_uri, false, $context);
-            var_dump($from_nexmo);exit;
-
         } else {
             // No way of sending a HTTP post :(
             return false;
@@ -209,9 +194,7 @@ class Sms {
 
 
         return $this->nexmoParse( $from_nexmo );
-
     }
-
 
     /**
      * Recursively normalise any key names in an object, removing unwanted characters
@@ -225,7 +208,6 @@ class Sms {
             $new_obj = array();
             $is_obj = false;
         }
-
 
         foreach($obj as $key => $val){
             // If we come across another class/array, normalise it
@@ -243,7 +225,6 @@ class Sms {
 
         return $new_obj;
     }
-
 
     /**
      * Parse server response.
@@ -265,10 +246,8 @@ class Sms {
                         $total_cost = $total_cost + (float)$msg->messageprice;
                     }
                 }
-
                 $response_obj->cost = $total_cost;
             }
-
             return $response_obj;
 
         } else {
@@ -276,9 +255,7 @@ class Sms {
             $this->nexmo_response = array();
             return false;
         }
-
     }
-
 
     /**
      * Validate an originator string
@@ -308,8 +285,6 @@ class Sms {
         return (string)$ret;
     }
 
-
-
     /**
      * Display a brief overview of a sent message.
      * Useful for debugging and quick-start purposes.
@@ -321,15 +296,10 @@ class Sms {
 
         // How many messages were sent?
         if ( $info->messagecount > 1 ) {
-
             $status = 'Your message was sent in ' . $info->messagecount . ' parts';
-
         } elseif ( $info->messagecount == 1) {
-
             $status = 'Your message was sent';
-
         } else {
-
             return 'There was an error sending your message';
         }
 
@@ -348,7 +318,6 @@ class Sms {
 
             $message_status[] = $tmp;
         }
-
 
         // Build the output
         if (isset($_SERVER['HTTP_HOST'])) {
@@ -387,16 +356,9 @@ class Sms {
         return $ret;
     }
 
-
-
-
-
-
-
     /**
      * Inbound text methods
      */
-
 
     /**
      * Check for any inbound messages, using $_GET by default.
@@ -422,7 +384,6 @@ class Sms {
         return true;
     }
 
-
     /**
      * Reply the current message if one is set.
      */
@@ -434,5 +395,4 @@ class Sms {
 
         return $this->sendText($this->from, $this->to, $message);
     }
-
 } 
