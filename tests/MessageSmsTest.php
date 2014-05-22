@@ -15,8 +15,12 @@ class MessageSmsTest extends Orchestra\Testbench\TestCase {
      */
     public function testWorks()
     {
-        $provider = new Sms();
+        $MessageSmsTest = \App::make('nexmosmsmessage');
         $this->assertTrue(true);
+    }
+    protected function getPackageProviders()
+    {
+        return array('Nexmo\NexmoServiceProvider');
     }
 }
  

@@ -6,8 +6,6 @@
  * Time: 3:24 PM
  */
 
-use Artistan\Nexmo\Service\Account;
-
 class AccountTest extends Orchestra\Testbench\TestCase {
 
     /**
@@ -15,8 +13,12 @@ class AccountTest extends Orchestra\Testbench\TestCase {
      */
     public function testWorks()
     {
-        $provider = new Account();
+        $AccountTest = \App::make('nexmoaccount');
         $this->assertTrue(true);
     }
+
+    protected function getPackageProviders()
+    {
+        return array('Nexmo\NexmoServiceProvider');
+    }
 }
- 

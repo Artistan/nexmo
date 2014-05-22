@@ -15,8 +15,12 @@ class ReceiptTest extends Orchestra\Testbench\TestCase {
      */
     public function testWorks()
     {
-        $provider = new Receipt();
+        $ReceiptTest = \App::make('nexmoreceipt');
         $this->assertTrue(true);
+    }
+    protected function getPackageProviders()
+    {
+        return array('Nexmo\NexmoServiceProvider');
     }
 }
  
