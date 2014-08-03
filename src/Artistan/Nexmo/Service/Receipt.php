@@ -13,9 +13,8 @@
 
 namespace Artistan\Nexmo\Service;
 
-
-class Receipt {
-
+class Receipt
+{
     const STATUS_DELIVERED = 'DELIVERED';
     const STATUS_EXPIRED = 'EXPIRED';
     const STATUS_FAILED = 'FAILED';
@@ -30,7 +29,8 @@ class Receipt {
 
     public $found = false;
 
-    public function __construct ($data = false) {
+    public function __construct($data = false)
+    {
         if (!$data) $data = $_GET;
 
         if (!isset($data['msisdn'], $data['network-code'], $data['messageId'])) {
@@ -54,11 +54,11 @@ class Receipt {
         // TODO add event with this object attached.
     }
 
-
     /**
      * Returns true if a valid receipt is found
      */
-    public function exists () {
+    public function exists()
+    {
         return $this->found;
     }
-} 
+}

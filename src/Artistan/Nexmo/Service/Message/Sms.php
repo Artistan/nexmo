@@ -7,9 +7,8 @@
 
 namespace Artistan\Nexmo\Service\Message;
 
-
-class Sms {
-
+class Sms
+{
     // Nexmo account credentials
     private $nx_key = '';
     private $nx_secret = '';
@@ -22,7 +21,7 @@ class Sms {
      * This will also keep any debugging to a minimum due to
      * not worrying about which parser is being used.
      */
-    var $nx_uri = 'https://rest.nexmo.com/sms/json';
+    public $nx_uri = 'https://rest.nexmo.com/sms/json';
 
     /**
      * @var array The most recent parsed Nexmo response.
@@ -32,7 +31,7 @@ class Sms {
     /**
      * @var bool If recieved an inbound message
      */
-    var $inbound_message = false;
+    public $inbound_message = false;
 
     // Current message
     public $to = '';
@@ -44,8 +43,9 @@ class Sms {
     // A few options
     public $ssl_verify = false; // Verify Nexmo SSL before sending any message
 
-    public function __construct ($api_key='', $api_secret='') {
-        if(!empty($api_key) && !empty($api_secret)){
+    public function __construct($api_key='', $api_secret='')
+    {
+        if (!empty($api_key) && !empty($api_secret)) {
             $this->nx_key = $api_key;
             $this->nx_secret = $api_secret;
         } else {
@@ -53,7 +53,7 @@ class Sms {
             $this->nx_secret = \Config::get('nexmo::auth.api_secret');
         }
 
-        if(empty($this->nx_key) || empty($this->nx_secret)){
+        if (empty($this->nx_key) || empty($this->nx_secret)) {
             throw new \Exception("Account Credentials Exception",5001);
         }
     }
@@ -65,23 +65,25 @@ class Sms {
      * message type. Otherwise set to TRUE if you require
      * unicode characters.
      */
-    function sendText ( $to, $from, $message, $unicode=null ) {
-
+    public function sendText($to, $from, $message, $unicode=null)
+    {
         // Making sure strings are UTF-8 encoded
         if ( !is_numeric($from) && !mb_check_encoding($from, 'UTF-8') ) {
             trigger_error('$from needs to be a valid UTF-8 encoded string');
+
             return false;
         }
 
         if ( !mb_check_encoding($message, 'UTF-8') ) {
             trigger_error('$message needs to be a valid UTF-8 encoded string');
+
             return false;
         }
 
         if ($unicode === null) {
             $containsUnicode = max(array_map('ord', str_split($message))) > 127;
         } else {
-            $containsUnicode = (bool)$unicode;
+            $containsUnicode = (bool) $unicode;
         }
 
         // Make sure $from is valid
@@ -98,13 +100,15 @@ class Sms {
             'text' => $message,
             'type' => $containsUnicode ? 'unicode' : 'text'
         );
+
         return $this->sendRequest ( $post );
     }
 
     /**
      * Prepare new WAP message.
      */
-    function sendBinary ( $to, $from, $body, $udh ) {
+    public function sendBinary($to, $from, $body, $udh)
+    {
         //Binary messages must be hex encoded
         $body = bin2hex ( $body );
         $udh = bin2hex ( $udh );
@@ -120,17 +124,19 @@ class Sms {
             'body' => $body,
             'udh' => $udh
         );
+
         return $this->sendRequest ( $post );
     }
 
     /**
      * Prepare new binary message.
      */
-    function pushWap ( $to, $from, $title, $url, $validity = 172800000 ) {
-
+    public function pushWap($to, $from, $title, $url, $validity = 172800000)
+    {
         // Making sure $title and $url are UTF-8 encoded
         if ( !mb_check_encoding($title, 'UTF-8') || !mb_check_encoding($url, 'UTF-8') ) {
             trigger_error('$title and $udh need to be valid UTF-8 encoded strings');
+
             return false;
         }
 
@@ -146,17 +152,19 @@ class Sms {
             'title' => $title,
             'validity' => $validity
         );
+
         return $this->sendRequest ( $post );
     }
 
     /**
      * Prepare and send a new message.
      */
-    private function sendRequest ( $data ) {
+    private function sendRequest($data)
+    {
         // Build the post data
         $data = array_merge($data, array('username' => $this->nx_key, 'password' => $this->nx_secret));
         $post = '';
-        foreach($data as $k => $v){
+        foreach ($data as $k => $v) {
             $post .= "&$k=$v";
         }
 
@@ -194,14 +202,14 @@ class Sms {
             return false;
         }
 
-
         return $this->nexmoParse( $from_nexmo );
     }
 
     /**
      * Recursively normalise any key names in an object, removing unwanted characters
      */
-    private function normaliseKeys ($obj) {
+    private function normaliseKeys($obj)
+    {
         // Determine is working with a class or araay
         if ($obj instanceof stdClass) {
             $new_obj = new stdClass();
@@ -211,7 +219,7 @@ class Sms {
             $is_obj = false;
         }
 
-        foreach($obj as $key => $val){
+        foreach ($obj as $key => $val) {
             // If we come across another class/array, normalise it
             if ($val instanceof stdClass || is_array($val)) {
                 $val = $this->normaliseKeys($val);
@@ -231,7 +239,8 @@ class Sms {
     /**
      * Parse server response.
      */
-    private function nexmoParse ( $from_nexmo ) {
+    private function nexmoParse($from_nexmo)
+    {
         $response = json_decode($from_nexmo);
         // Copy the response data into an object, removing any '-' characters from the key
         $response_obj = $this->normaliseKeys($response);
@@ -244,18 +253,20 @@ class Sms {
             if (is_array($response_obj['messages'])) {
                 foreach ($response_obj['messages'] as $msg) {
                     if (property_exists($msg, "messageprice")) {
-                        $total_cost = $total_cost + (float)$msg->messageprice;
-                    } elseif(array_key_exists('messageprice',$msg)) {
-                        $total_cost = $total_cost + (float)$response_obj['messageprice'];
+                        $total_cost = $total_cost + (float) $msg->messageprice;
+                    } elseif (array_key_exists('messageprice',$msg)) {
+                        $total_cost = $total_cost + (float) $response_obj['messageprice'];
                     }
                 }
                 $response_obj['cost'] = $total_cost;
             }
+
             return $response_obj;
 
         } else {
             // A malformed response
             $this->nexmo_response = array();
+
             return false;
         }
     }
@@ -267,11 +278,12 @@ class Sms {
      * whilst stinging you with the financial cost! While this cannot correct them, it
      * will try its best to correctly format them.
      */
-    private function validateOriginator($inp){
+    private function validateOriginator($inp)
+    {
         // Remove any invalid characters
-        $ret = preg_replace('/[^a-zA-Z0-9]/', '', (string)$inp);
+        $ret = preg_replace('/[^a-zA-Z0-9]/', '', (string) $inp);
 
-        if(preg_match('/[a-zA-Z]/', $inp)){
+        if (preg_match('/[a-zA-Z]/', $inp)) {
 
             // Alphanumeric format so make sure it's < 11 chars
             $ret = substr($ret, 0, 11);
@@ -279,28 +291,29 @@ class Sms {
         } else {
 
             // Numerical, remove any prepending '00'
-            if(substr($ret, 0, 2) == '00'){
+            if (substr($ret, 0, 2) == '00') {
                 $ret = substr($ret, 2);
                 $ret = substr($ret, 0, 15);
             }
         }
 
-        return (string)$ret;
+        return (string) $ret;
     }
 
     /**
      * Display a brief overview of a sent message.
      * Useful for debugging and quick-start purposes.
      */
-    public function displayOverview( $nexmo_response=null ){
+    public function displayOverview($nexmo_response=null)
+    {
         $info = (!$nexmo_response) ? $this->nexmo_response : $nexmo_response;
 
         if (!$nexmo_response ) return 'Cannot display an overview of this response';
 
         // How many messages were sent?
-        if ( $info->messagecount > 1 ) {
+        if ($info->messagecount > 1) {
             $status = 'Your message was sent in ' . $info->messagecount . ' parts';
-        } elseif ( $info->messagecount == 1) {
+        } elseif ($info->messagecount == 1) {
             $status = 'Your message was sent';
         } else {
             return 'There was an error sending your message';
@@ -309,10 +322,10 @@ class Sms {
         // Build an array of each message status and ID
         if (!is_array($info->messages)) $info->messages = array();
         $message_status = array();
-        foreach ( $info->messages as $message ) {
+        foreach ($info->messages as $message) {
             $tmp = array('id'=>'', 'status'=>0);
 
-            if ( $message->status != 0) {
+            if ($message->status != 0) {
                 $tmp['status'] = $message->errortext;
             } else {
                 $tmp['status'] = 'OK';
@@ -369,7 +382,8 @@ class Sms {
      * This will set the current message to the inbound
      * message allowing for a future reply() call.
      */
-    public function inboundText( $data=null ){
+    public function inboundText($data=null)
+    {
         if(!$data) $data = $_GET;
 
         if(!isset($data['text'], $data['msisdn'], $data['to'])) return false;
@@ -390,7 +404,8 @@ class Sms {
     /**
      * Reply the current message if one is set.
      */
-    public function reply ($message) {
+    public function reply($message)
+    {
         // Make sure we actually have a text to reply to
         if (!$this->inbound_message) {
             return false;
@@ -398,4 +413,4 @@ class Sms {
 
         return $this->sendText($this->from, $this->to, $message);
     }
-} 
+}

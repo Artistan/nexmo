@@ -6,10 +6,8 @@
  * Time: 3:25 PM
  */
 
-use \Mockery as m;
-
-class ReceiptTest extends Orchestra\Testbench\TestCase {
-
+class ReceiptTest extends Orchestra\Testbench\TestCase
+{
     /**
      * @test
      */
@@ -23,4 +21,3 @@ class ReceiptTest extends Orchestra\Testbench\TestCase {
         return array('Artistan\Nexmo\NexmoServiceProvider');
     }
 }
- 
