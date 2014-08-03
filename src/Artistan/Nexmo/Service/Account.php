@@ -22,15 +22,15 @@ class Account
         'cancel_number' => array('method' => 'POST', 'url' => '/number/cancel/{k}/{s}/{country_code}/{msisdn}')
     );
 
-
     private $cache = array();
 
     /**
      * @param $nx_key Your Nexmo account key
      * @param $nx_secret Your Nexmo secret
      */
-    public function __construct ($api_key='', $api_secret='') {
-        if(!empty($api_key) && !empty($api_secret)){
+    public function __construct($api_key='', $api_secret='')
+    {
+        if (!empty($api_key) && !empty($api_secret)) {
             $this->nx_key = $api_key;
             $this->nx_secret = $api_secret;
         } else {
@@ -38,17 +38,17 @@ class Account
             $this->nx_secret = \Config::get('nexmo::auth.api_secret');
         }
 
-        if(empty($this->nx_key) || empty($this->nx_secret)){
+        if (empty($this->nx_key) || empty($this->nx_secret)) {
             throw new \Exception("Account Credentials Exception",5001);
         }
     }
-
 
     /**
      * Return your account balance in Euros
      * @return float|bool
      */
-    public function balance () {
+    public function balance()
+    {
         if (!isset($this->cache['balance'])) {
             $tmp = $this->apiCall('get_balance');
             if (!$tmp['data']) return false;
@@ -56,16 +56,16 @@ class Account
             $this->cache['balance'] = $tmp['data']['value'];
         }
 
-        return (float)$this->cache['balance'];
+        return (float) $this->cache['balance'];
     }
-
 
     /**
      * Find out the price to send a message to a country
      * @param $country_code Country code to return the SMS price for
      * @return float|bool
      */
-    public function smsPricing ($country_code) {
+    public function smsPricing($country_code)
+    {
         $country_code = strtoupper($country_code);
 
         if (!isset($this->cache['country_codes']))
@@ -78,16 +78,16 @@ class Account
             $this->cache['country_codes'][$country_code] = $tmp['data'];
         }
 
-        return (float)$this->cache['country_codes'][$country_code]['mt'];
+        return (float) $this->cache['country_codes'][$country_code]['mt'];
     }
-
 
     /**
      * Return a countries international dialing code
      * @param $country_code Country code to return the dialing code for
      * @return string|bool
      */
-    public function getCountryDialingCode ($country_code) {
+    public function getCountryDialingCode($country_code)
+    {
         $country_code = strtoupper($country_code);
 
         if (!isset($this->cache['country_codes']))
@@ -100,15 +100,15 @@ class Account
             $this->cache['country_codes'][$country_code] = $tmp['data'];
         }
 
-        return (string)$this->cache['country_codes'][$country_code]['prefix'];
+        return (string) $this->cache['country_codes'][$country_code]['prefix'];
     }
-
 
     /**
      * Get an array of all purchased numbers for your account
      * @return array|bool
      */
-    public function numbersList () {
+    public function numbersList()
+    {
         if (!isset($this->cache['own_numbers'])) {
             $tmp = $this->apiCall('get_own_numbers');
             if (!$tmp['data']) return false;
@@ -123,14 +123,14 @@ class Account
         return $this->cache['own_numbers']['numbers'];
     }
 
-
     /**
      * Search available numbers to purchase for your account
      * @param $country_code Country code to search available numbers in
      * @param $pattern Number pattern to search for
      * @return bool
      */
-    public function numbersSearch ($country_code, $pattern) {
+    public function numbersSearch($country_code, $pattern)
+    {
         $country_code = strtoupper($country_code);
 
         $tmp = $this->apiCall('search_numbers', array('country_code'=>$country_code, 'pattern'=>$pattern));
@@ -138,20 +138,20 @@ class Account
         return $tmp['data']['numbers'];
     }
 
-
     /**
      * Purchase an available number to your account
      * @param $country_code Country code for your desired number
      * @param $msisdn Full number which you wish to purchase
      * @return bool
      */
-    public function numbersBuy ($country_code, $msisdn) {
+    public function numbersBuy($country_code, $msisdn)
+    {
         $country_code = strtoupper($country_code);
 
         $tmp = $this->apiCall('buy_number', array('country_code'=>$country_code, 'msisdn'=>$msisdn));
+
         return ($tmp['http_code'] === 200);
     }
-
 
     /**
      * Cancel an existing number on your account
@@ -159,21 +159,23 @@ class Account
      * @param $msisdn The number to cancel
      * @return bool
      */
-    public function numbersCancel ($country_code, $msisdn) {
+    public function numbersCancel($country_code, $msisdn)
+    {
         $country_code = strtoupper($country_code);
 
         $tmp = $this->apiCall('cancel_number', array('country_code'=>$country_code, 'msisdn'=>$msisdn));
+
         return ($tmp['http_code'] === 200);
     }
-
 
     /**
      * Run a REST command on Nexmo SMS services
      * @param $command
-     * @param array $data
+     * @param  array      $data
      * @return array|bool
      */
-    private function apiCall($command, $data=array()) {
+    private function apiCall($command, $data=array())
+    {
         if (!isset($this->rest_commands[$command])) {
             return false;
         }
@@ -237,9 +239,10 @@ class Account
         }
 
         $data = json_decode($from_nexmo, true);
+
         return array(
             'data' => $data,
-            'http_code' => (int)$http_response_code
+            'http_code' => (int) $http_response_code
         );
 
     }

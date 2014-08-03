@@ -6,10 +6,8 @@
  * Time: 3:24 PM
  */
 
-use \Mockery as m;
-
-class AccountTest extends Orchestra\Testbench\TestCase {
-
+class AccountTest extends Orchestra\Testbench\TestCase
+{
     /**
      * @test
      */
