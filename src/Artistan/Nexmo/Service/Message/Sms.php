@@ -199,42 +199,10 @@ class Sms {
     }
 
     /**
-     * Recursively normalise any key names in an object, removing unwanted characters
-     */
-    private function normaliseKeys ($obj) {
-        // Determine is working with a class or araay
-        if ($obj instanceof stdClass) {
-            $new_obj = new stdClass();
-            $is_obj = true;
-        } else {
-            $new_obj = array();
-            $is_obj = false;
-        }
-
-        foreach($obj as $key => $val){
-            // If we come across another class/array, normalise it
-            if ($val instanceof stdClass || is_array($val)) {
-                $val = $this->normaliseKeys($val);
-            }
-
-            // Replace any unwanted characters in they key name
-            if ($is_obj) {
-                $new_obj->{str_replace('-', '', $key)} = $val;
-            } else {
-                $new_obj[str_replace('-', '', $key)] = $val;
-            }
-        }
-
-        return $new_obj;
-    }
-
-    /**
      * Parse server response.
      */
     private function nexmoParse ( $from_nexmo ) {
-        $response = json_decode($from_nexmo);
-        // Copy the response data into an object, removing any '-' characters from the key
-        $response_obj = $this->normaliseKeys($response);
+        $response = json_decode($from_nexmo, true);
 
         if ($response_obj) {
             $this->nexmo_response = (array) $response_obj;
@@ -243,14 +211,14 @@ class Sms {
             $response_obj['cost'] = $total_cost = 0;
             if (is_array($response_obj['messages'])) {
                 foreach ($response_obj['messages'] as $msg) {
-                    if (property_exists($msg, "messageprice")) {
-                        $total_cost = $total_cost + (float)$msg->messageprice;
-                    } elseif(array_key_exists('messageprice',$msg)) {
-                        $total_cost = $total_cost + (float)$response_obj['messageprice'];
+                    if (isset($msg["message-price"])) {
+                        $total_cost = $total_cost + (float)$response_obj['message-price'];
                     }
                 }
+
                 $response_obj['cost'] = $total_cost;
             }
+            
             return $response_obj;
 
         } else {
