@@ -1,4 +1,4 @@
-Nexmo for Laravel 4
+Nexmo for Laravel 5
 ==============
 
 Implements a service for Nexmo messaging based on
@@ -20,6 +20,10 @@ Add a ServiceProvider to your providers array in `app/config/app.php`:
 		'Artistan\Nexmo\NexmoServiceProvider',
 
 	)
+
+### Publish the Vendor Config
+
+php artisan vendor:publish --provider="Artistan\Nexmo\NexmoServiceProvider"
 
 ### Usage - work in progress
 
