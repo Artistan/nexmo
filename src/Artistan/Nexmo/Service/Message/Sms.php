@@ -49,8 +49,8 @@ class Sms {
             $this->nx_key = $api_key;
             $this->nx_secret = $api_secret;
         } else {
-            $this->nx_key = \Config::get('nexmo::auth.api_key');
-            $this->nx_secret = \Config::get('nexmo::auth.api_secret');
+            $this->nx_key = \Config::get('nexmo.api_key');
+            $this->nx_secret = \Config::get('nexmo.api_secret');
         }
 
         if(empty($this->nx_key) || empty($this->nx_secret)){

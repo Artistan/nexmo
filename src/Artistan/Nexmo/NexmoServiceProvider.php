@@ -21,7 +21,7 @@ class NexmoServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
-        
+        $this->publishes([__DIR__.'/../../config/nexmo.php' => config_path('nexmo.php')]);       
     }
 
 	/**
