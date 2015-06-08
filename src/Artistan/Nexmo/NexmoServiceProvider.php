@@ -21,7 +21,7 @@ class NexmoServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
-        $this->package('artistan/nexmo');
+        
     }
 
 	/**
