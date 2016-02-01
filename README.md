@@ -7,7 +7,7 @@ Implements a service for Nexmo messaging based on
 
 Include the artistan nexmo package as a dependency in your `composer.json` [Packagist](https://packagist.org/packages/artistan/nexmo):
 
-    "artistan/nexmo": "0.1.*"
+    "artistan/nexmo": "0.2.*"
 
 ### Installation
 
